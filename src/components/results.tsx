@@ -34,7 +34,10 @@ export function Results({ search, className }: ResultsProps) {
     const title = `${results.at(0)?.book} ${results.at(0)?.chapter}`
     return (
         <div className={cn("flex-1 h-full overflow-y-auto relative", className)}>
-            <h2 className="text-xl font-semibold top-0 sticky bg-background p-4">{title}</h2>
+            <h2 className="t
+                
+            ext<div></div>
+             font-semibold top-0 sticky bg-background p-4">{title}</h2>
             <div className="px-4 pb-4">
                 {results.map(result => (
                     <div className="flex gap-1 items-top mb-1">
