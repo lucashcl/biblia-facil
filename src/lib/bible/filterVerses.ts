@@ -11,18 +11,14 @@ type JsonVerse = {
 export function filterVerses({
     book,
     chapter,
-    startVerse,
-    endVerse,
     content
   }: {
     book: string;
     chapter: number;
     content: JsonVerse[],
-    startVerse?: number;
-    endVerse?: number;
   }): Verse[] {
-    // Helper to normalize and lowercase strings (remove accents)
-
+    // Retorna o capítulo inteiro. O intervalo de versículos pedido na
+    // busca não filtra a exibição, apenas destaca os versículos.
     const normalizedBook = normalize(book);
 
     return content
@@ -30,11 +26,7 @@ export function filterVerses({
         (v) =>
           normalize(v.book_name) === normalizedBook 
           &&
-          v.chapter === chapter 
-          &&
-          (startVerse ? v.verse >= startVerse : true)
-          &&
-          (endVerse ? v.verse <= endVerse : startVerse ? v.verse <= startVerse : true)
+          v.chapter === chapter
       )
       .map(
         (v): Verse => ({

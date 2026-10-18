@@ -13,6 +13,11 @@ export interface ParsedQuery {
   endVerse?: number;
 }
 
+export interface VerseRange {
+  start: number;
+  end: number;
+}
+
 export interface BibleUpdate {
   book: string;
   chapter: number;

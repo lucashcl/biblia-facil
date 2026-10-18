@@ -1,4 +1,5 @@
 import { useSearchBible } from "@/hooks/useSearchBible"
+import { useEffect, useRef } from "react"
 import SpinnerCircle1 from "./ui/spinner"
 import { Center } from "./center"
 import { cn } from "../lib/utils"
@@ -9,7 +10,13 @@ type ResultsProps = {
 }
 
 export function Results({ search, className }: ResultsProps) {
-    const { data: results, isLoading, error, isError } = useSearchBible(search)
+    const { data: results, highlight, isLoading, error, isError } = useSearchBible(search)
+    const highlightedRef = useRef<HTMLSpanElement>(null)
+
+    useEffect(() => {
+        highlightedRef.current?.scrollIntoView({ block: "nearest", behavior: "smooth" })
+    }, [highlight])
+
     if (isLoading) return (
         <Center className={className}>
             <SpinnerCircle1 />
@@ -33,18 +40,35 @@ export function Results({ search, className }: ResultsProps) {
     )
     const title = `${results.at(0)?.book} ${results.at(0)?.chapter}`
     return (
-        <div className={cn("flex-1 h-full overflow-y-auto relative", className)}>
-            <h2 className="t
-                
-            ext<div></div>
-             font-semibold top-0 sticky bg-background p-4">{title}</h2>
-            <div className="px-4 pb-4">
-                {results.map(result => (
-                    <div className="flex gap-1 items-top mb-1">
-                        <span className="text-xs text-muted-foreground truncate">{result.verse} </span>
-                        <p className="leading-tight">{result.text}</p>
-                    </div>
-                ))}
+        <div className={cn("flex-1 min-h-0 overflow-y-auto relative [scrollbar-gutter:stable_both-edges]", className)}>
+            <div className="w-full max-w-2xl mx-auto">
+                <h2 className="z-10 text-lg font-semibold text-center top-0 sticky bg-background py-3">{title}</h2>
+                <div className="px-4 pb-6 pt-2">
+                    <p className="font-bible text-lg leading-relaxed text-justify hyphens-auto">
+                        {results.map(result => {
+                            const isHighlighted = !!highlight && result.verse >= highlight.start && result.verse <= highlight.end
+                            const isFirstHighlighted = !!highlight && result.verse === highlight.start
+                            return (
+                                <span
+                                    key={result.verse}
+                                    ref={isFirstHighlighted ? highlightedRef : undefined}
+                                    className={cn(
+                                        "scroll-mt-16",
+                                        isHighlighted && "bg-amber-200/60 dark:bg-amber-300/20 rounded-[2px]"
+                                    )}
+                                >
+                                    <sup
+                                        className={cn(
+                                            "text-[0.65em] font-medium text-muted-foreground hover:bg-muted hover:text-foreground rounded-full px-0.5 -mx-0.5 mr-0.5 select-none",
+                                            isHighlighted && "text-foreground"
+                                        )}
+                                    >{result.verse}</sup>
+                                    {result.text}{" "}
+                                </span>
+                            )
+                        })}
+                    </p>
+                </div>
             </div>
         </div>
     )
